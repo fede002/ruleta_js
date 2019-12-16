@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title>Ruleta fiesta fin de año 2019</title>
+  <!-- Plugin CSS -->
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="css/easywheel.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+  <style>
+    body{
+      background-image: url("img/logo.png");
+      /*background-repeat: repeat-y;**/
+    }
+  </style>
+  <!-- Vendor JAVASCRIPT -->
+  <script type="text/javascript" src="js/jquery.min.js"></script>
+  <!-- Plugin JAVASCRIPT -->
+  <script type="text/javascript" src="js/jquery.easywheel.js"></script>
+  <script type="text/javascript">
+
+    $(function () {
+
+      valores = [
+        {
+          clave: "1",
+          name: 'Remera',
+          message: 'Ganaste una remera',
+          color: '#3498db',
+          cantidad: 2
+        }, {
+          clave: "2",
+          name: 'Llavero',
+          message: 'Ganaste un llavero',
+          color: '#ffc107',
+          cantidad: 2
+        }, {
+          clave: "3",
+          name: 'Lapicera',
+          message: 'Ganaste una lapicera',
+          color: '#f44336',
+          cantidad: 2
+        },{
+          clave: "4",
+          name: 'Gorro',
+          message: 'Ganaste un gorro',
+          color: '#2d572c',
+          cantidad: 2
+        }
+      ];
+
+      configEasyWheel = {
+
+        duration: 3000,
+        rotates: 3,
+        frame: 1,
+        easing: "easyWheel",
+        rotateCenter: true,
+        type: "spin",
+        markerAnimation: true,
+        centerClass: 0,
+        width: 500,
+        fontSize: 20,
+        textOffset: 10,
+        letterSpacing: 0,
+        textLine: "h",
+        textArc: true,
+        shadowOpacity: 3,
+        sliceLineWidth: 5,
+        outerLineWidth: 5,
+        centerWidth: 20,
+        centerLineWidth: 5,
+        centerImageWidth: 42,
+        textColor: "#fff",
+        markerColor: "#CC3333",
+        centerLineColor: "#424242",
+        centerBackground: "#333333",
+        sliceLineColor: "#424242",
+        outerLineColor: "#424242",
+        shadow: "#000",
+        selectedSliceColor: "#333",
+
+        items: valores,
+
+        random: true,
+        button: '.spin-to-win',
+        onStart: function (results, spinCount, now) {
+          $('.spinner-message').css('color', '#90A4AE');
+          $('.spinner-message').html('Spinning...');
+        },
+        onComplete: function (results, count, now) {
+
+          
+
+          $('.spinner-message').css('color', results.color).html(results.message);
+          $(".logMsg").html("   <span class='badge badge-secondary' >" + count + ": " + results.name + " - " + results.message + "</span>");
+          $(".logMsg_pila").prepend("   <span class='badge badge-secondary'>" + count + ": " + results.name + " - " + results.message + "</span></br>");
+          //console.log(results, count, now);
+
+          $(valores).each(function(i,o){
+              if(o.clave == results.clave){
+                valoresIndex = i
+              }
+          });
+
+          if (valores[valoresIndex].cantidad == 1) {
+            valores.splice(valoresIndex, 1);
+            $('.classname').easyWheel('destroy', true);
+            $('.classname').easyWheel(configEasyWheel);      
+          } else {
+            valores[valoresIndex].cantidad = valores[valoresIndex].cantidad - 1
+          }
+
+          //console.log(valores);
+          pintarTabla();
+
+          if(valores.length == 1){
+            msjText = "Terminoooooo!!! PLP. Los siguiente premios se sortean: "
+            $(".logMsg").html("   <span class='badge badge-secondary' style='font-size:20px' >"+msjText+"</span>");  
+            $("#ruleta").hide()
+            $("#resultados").addClass("col-sm-12")
+            $('.classname').easyWheel('destroy', true);
+          }
+        }
+      };
+
+      $('.classname').easyWheel(configEasyWheel);
+
+
+      function pintarTabla() {
+        var tabla = $("<table>")
+        tabla.addClass("table")
+        tabla.append('<tr><td>Clave</td><td>Name</td><td>Cantidad</td><td>Mensaje</td></tr>');
+        $(valores).each(function (i, obj) {
+          tabla.append('<tr><td>' + obj.clave + '</td><td>' + obj.name + '</td><td>' + obj.cantidad + '</td><td>' + obj.message + '</td></tr>');
+        })
+        $(".logMsg_tab").html(tabla);
+
+      }
+      /****************************************************/
+
+      //$(".centerCircle").attr("src", "img/grupo_olmos.jpg");
+      $(".spin-to-win").hide();
+      $(document).on("click", function () {
+        $(".spin-to-win").click();
+      });
+
+    });
+
+    
+
+  </script>
+</head>
+
+<body style="text-align: center;">
+
+  <div class="row">
+    <div class="col-sm-12" id="ruleta">
+      <br>
+      <div class="classname"></div>
+      <a href="https://www.22codes.com/demo/javascript/easywheel/#" class="btn btn-info spin-to-win">Click para
+        jugar</a>
+    </div>
+     <div class="col-sm-12" id="resultados" >
+      <div class="logMsg" style="width: 100%; margin: 10px auto;padding: 20px;font-family:arial;font-weight: bold;font-size:30px">
+      </div>
+      <div class="logMsg_tab" style="width: 100%; margin: 10px auto;font-family:arial;font-size: 14px;background-color: white;"></div>
+      <pre class="logMsg_pila" style="width: 100%; margin: 10px auto;font-family:arial;font-size: 14px;"></pre>
+    </div>
+  </div>
+
+</body>
+
+</html>
