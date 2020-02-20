@@ -11,20 +11,63 @@
   <link rel="stylesheet" href="css/easywheel.css">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
   <style>
-    body{
+    body {
       background-image: url("img/logo.png");
       /*background-repeat: repeat-y;**/
+    }
+
+    .easyWheel {
+      /*margin-top: 70px;
+		margin-left: 31px;*/
     }
   </style>
   <!-- Vendor JAVASCRIPT -->
   <script type="text/javascript" src="js/jquery.min.js"></script>
   <!-- Plugin JAVASCRIPT -->
   <script type="text/javascript" src="js/jquery.easywheel.js"></script>
+  <script type="text/javascript"  >
+  
+  function createCookie(name, value, days) {
+    var expires;
+
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = "; expires=" + date.toGMTString();
+    } else {
+        expires = "";
+    }
+    document.cookie = encodeURIComponent(name) + "=" + encodeURIComponent(value) +"; expires=Fri, 31 Dec 9999 23:59:59 GMT";
+    //document.cookie = encodeURIComponent(name) + "=" + encodeURIComponent(value) + expires + "; path=/";
+}
+
+function readCookie(name) {
+    var nameEQ = encodeURIComponent(name) + "=";
+    var ca = document.cookie.split(';');
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) === ' ')
+            c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) === 0)
+            return decodeURIComponent(c.substring(nameEQ.length, c.length));
+    }
+    return null;
+}
+
+function eraseCookie(name) {
+    createCookie(name, "", -1);
+}
+
+  </script>
   <script type="text/javascript">
 
     $(function () {
 
-      valores = [
+      var valores = JSON.parse(readCookie("val_juego"));     
+
+      $("#cargar_de_nuevo").on("click", function(){
+        console.log("cargo!");
+        valores = [
         {
           clave: "1",
           name: 'Remera',
@@ -43,7 +86,7 @@
           message: 'Ganaste una lapicera',
           color: '#f44336',
           cantidad: 2
-        },{
+        }, {
           clave: "4",
           name: 'Gorro',
           message: 'Ganaste un gorro',
@@ -51,6 +94,11 @@
           cantidad: 2
         }
       ];
+      createCookie("val_juego", JSON.stringify(valores));        
+
+      });
+
+      
 
       configEasyWheel = {
 
@@ -61,28 +109,28 @@
         rotateCenter: true,
         type: "spin",
         markerAnimation: true,
-        centerClass: 0,
-        width: 500,
-        fontSize: 20,
-        textOffset: 10,
-        letterSpacing: 0,
+        centerClass: 1,
+        width: 650,
+        fontSize: 45,
+        textOffset: 13,
+        letterSpacing: 2,
         textLine: "h",
         textArc: true,
         shadowOpacity: 3,
         sliceLineWidth: 5,
         outerLineWidth: 5,
         centerWidth: 20,
-        centerLineWidth: 5,
-        centerImageWidth: 42,
+        centerLineWidth: 2,
+        centerImageWidth: 18,
         textColor: "#fff",
         markerColor: "#CC3333",
         centerLineColor: "#424242",
-        centerBackground: "#333333",
+        centerBackground: "#ffffff",
         sliceLineColor: "#424242",
         outerLineColor: "#424242",
         shadow: "#000",
         selectedSliceColor: "#333",
-
+        centerImage: "./img/logo.png",
         items: valores,
 
         random: true,
@@ -93,23 +141,23 @@
         },
         onComplete: function (results, count, now) {
 
-          
+
 
           $('.spinner-message').css('color', results.color).html(results.message);
           $(".logMsg").html("   <span class='badge badge-secondary' >" + count + ": " + results.name + " - " + results.message + "</span>");
           $(".logMsg_pila").prepend("   <span class='badge badge-secondary'>" + count + ": " + results.name + " - " + results.message + "</span></br>");
           //console.log(results, count, now);
 
-          $(valores).each(function(i,o){
-              if(o.clave == results.clave){
-                valoresIndex = i
-              }
+          $(valores).each(function (i, o) {
+            if (o.clave == results.clave) {
+              valoresIndex = i
+            }
           });
 
           if (valores[valoresIndex].cantidad == 1) {
             valores.splice(valoresIndex, 1);
             $('.classname').easyWheel('destroy', true);
-            $('.classname').easyWheel(configEasyWheel);      
+            $('.classname').easyWheel(configEasyWheel);
           } else {
             valores[valoresIndex].cantidad = valores[valoresIndex].cantidad - 1
           }
@@ -117,9 +165,9 @@
           //console.log(valores);
           pintarTabla();
 
-          if(valores.length == 1){
+          if (valores.length == 1) {
             msjText = "Terminoooooo!!! PLP. Los siguiente premios se sortean: "
-            $(".logMsg").html("   <span class='badge badge-secondary' style='font-size:20px' >"+msjText+"</span>");  
+            $(".logMsg").html("   <span class='badge badge-secondary' style='font-size:20px' >" + msjText + "</span>");
             $("#ruleta").hide()
             $("#resultados").addClass("col-sm-12")
             $('.classname').easyWheel('destroy', true);
@@ -139,6 +187,7 @@
         })
         $(".logMsg_tab").html(tabla);
 
+        createCookie("val_juego", JSON.stringify(valores));        
       }
       /****************************************************/
 
@@ -150,26 +199,23 @@
 
     });
 
-    
-
   </script>
 </head>
 
 <body style="text-align: center;">
-
   <div class="row">
     <div class="col-sm-12" id="ruleta">
-      <br>
       <div class="classname"></div>
-      <a href="https://www.22codes.com/demo/javascript/easywheel/#" class="btn btn-info spin-to-win">Click para
-        jugar</a>
+      <a href="#" class="btn btn-info spin-to-win">Click para jugar</a>
+      <button  type="button" id="cargar_de_nuevo" class="btn btn-info" >Recargar juego</button>
+      
     </div>
-     <div class="col-sm-12" id="resultados" >
+    <!-- <div class="col-sm-12" id="resultados" >
       <div class="logMsg" style="width: 100%; margin: 10px auto;padding: 20px;font-family:arial;font-weight: bold;font-size:30px">
       </div>
       <div class="logMsg_tab" style="width: 100%; margin: 10px auto;font-family:arial;font-size: 14px;background-color: white;"></div>
       <pre class="logMsg_pila" style="width: 100%; margin: 10px auto;font-family:arial;font-size: 14px;"></pre>
-    </div>
+    </div> -->
   </div>
 
 </body>
